@@ -1,0 +1,12 @@
+.header-bg {
+  background: linear-gradient(to right, rgb(104, 104, 204), #161e61);
+}
+
+.me-4,
+.last {
+  background-color: #65718b;
+}
+
+.top-temp-card{
+  max-width: 920px;
+}
