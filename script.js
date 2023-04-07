@@ -11,11 +11,17 @@ $(document).ready(function () {
   // ::::::::: Event listener for search button ::::::::
   $(".btn").on("click", function (e) {
     e.preventDefault();
+
+    // Get value of input field
     const searchCity = $("#city-input").val();
-    // localStorageData.push(searchCity);
+
+    // Clear input field
+    $("#city-input").val("");
+
+    // Save searched city to local storage
     localStorageData.add(searchCity);
-    // localStorage.setItem("city", JSON.stringify(localStorageData))
     localStorage.setItem("city", JSON.stringify(Array.from(localStorageData)));
+
     getApiData(searchCity);
     showHistory();
   });
@@ -40,10 +46,7 @@ $(document).ready(function () {
       button.on("click", (e) => {
         e.preventDefault();
         const city = button.data("city");
-        console.log(city);
         getApiData(city);
-        // showHistory();
-        // Add code here to load the forecast data for the selected city
       });
 
       historyContainer.append(button);
@@ -69,6 +72,7 @@ $(document).ready(function () {
         getFiveDayForecast(forecastData);
       });
   }
+
   //::::::::::: Main weather section ::::::::::::
   function loadMainWeather(mainWeather) {
     console.log(mainWeather);
@@ -104,7 +108,9 @@ $(document).ready(function () {
     ];
 
     let dateIndex = 0;
-
+    // Loop through each forecast data items and each time the
+    // date matches the date at the dateIndex, populate forecast card
+    // then continue to loop searching for the next date in the array
     for (const e of forecastData.list) {
       if (e.dt_txt === dates[dateIndex]) {
         populateForecastCard(e, `.card-title${dateIndex + 1}`, dateIndex + 1);
