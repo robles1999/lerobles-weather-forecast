@@ -18,12 +18,12 @@ $(document).ready(function () {
     // Clear input field
     $("#city-input").val("");
 
-    // Save searched city to local storage
-    localStorageData.add(searchCity);
-    localStorage.setItem("city", JSON.stringify(Array.from(localStorageData)));
+    // // Save searched city to local storage
+    // localStorageData.add(searchCity);
+    // localStorage.setItem("city", JSON.stringify(Array.from(localStorageData)));
 
     getApiData(searchCity);
-    showHistory();
+    // showHistory();
   });
 
   // Load previous data and store it in a set to avoid duplicate history
@@ -68,6 +68,15 @@ $(document).ready(function () {
       })
       .then(function (forecastData) {
         console.log(forecastData);
+
+        // Save searched city to local storage using the name of the city
+        // of the API data to display the city name with the correct font case
+        localStorageData.add(forecastData.city.name);
+        localStorage.setItem(
+          "city",
+          JSON.stringify(Array.from(localStorageData))
+        );
+        showHistory();
         loadMainWeather(forecastData);
         getFiveDayForecast(forecastData);
       });
@@ -125,7 +134,9 @@ $(document).ready(function () {
   function populateForecastCard(data, elementClass, num) {
     $(".card-body" + num).empty();
     // Create card header
-    const cardHeader = $("<h5>").text(dayjs(data.dt_txt).format("M/DD/YYYY"));
+    const cardHeader = $("<h5>")
+      .attr("class", "mt-2 border-0")
+      .text(dayjs(data.dt_txt).format("M/DD/YYYY"));
     // Get weather icon
     const icon = data.weather[0].icon;
     const iconLink = "https://openweathermap.org/img/wn/" + icon + ".png";
