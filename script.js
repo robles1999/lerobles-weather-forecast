@@ -2,9 +2,39 @@
 $(document).ready(function () {
   let localStorageData;
   loadStorageData();
-  if (localStorageData.length > 0) {
-    showHistory();
-  }
+  getCurrentCity();
+  function getCurrentCity() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          // Make a request to a geocoding API to get the city name from lat/lon coordinates
+          const geocodingUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+          fetch(geocodingUrl)
+          .then((response) => response.json())
+          .then((data) => {
+            const cityName = data.address.city;
+            console.log(`You are in ${cityName}`);
+          })
+          .catch((error) => {
+            console.error("Error retrieving city name:", error);
+          });
+        },
+        (error) => {
+          console.error("Error getting current location:", error);
+        }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    }
+  showHistory();
+
+  // if (localStorageData.length > 0) {
+  //   showHistory();
+  // }
   console.log(localStorageData);
   // const weatherKey = "f2d1d77af028ba0bd220e486c31f55a9";
   const weatherKey = "a660a5b41f50067965e089ee5349ac0e";
@@ -16,22 +46,39 @@ $(document).ready(function () {
   $(".btn").on("click", function (e) {
     e.preventDefault();
     const searchCity = $("#city-input").val();
-    localStorageData.push(searchCity);
-    localStorage.setItem("city", JSON.stringify(localStorageData))
+    // localStorageData.push(searchCity);
+    localStorageData.add(searchCity);
+    // localStorage.setItem("city", JSON.stringify(localStorageData))
+    localStorage.setItem("city", JSON.stringify(Array.from(localStorageData)));
     getApiData(searchCity);
     showHistory();
   });
 
-  function loadStorageData()
-  {
-    localStorageData = JSON.parse(localStorage.getItem("city")) || [];
+  function loadStorageData() {
+    localStorageData = new Set(JSON.parse(localStorage.getItem("city")) || []);
+    // localStorageData = JSON.parse(localStorage.getItem("city")) || [];
   }
 
-  function showHistory()
-  {
-    document.querySelector("#search-history").innerHTML = "";
-    localStorageData.forEach((e) => {
-      $("#search-history").append($("<button>").attr("class", "btn btn-primary mb-3").text(e));
+  function showHistory() {
+    // function showHistory() {
+    const historyContainer = $("#search-history");
+    historyContainer.empty();
+
+    localStorageData.forEach((data) => {
+      const button = $("<button>")
+        .addClass("btn-history btn btn-primary mb-3")
+        .text(data)
+        .attr("data-city", data);
+
+      button.on("click", () => {
+        // e.preventDefault()
+        const city = button.data("city");
+        console.log(city);
+        getApiData(city);
+        // Add code here to load the forecast data for the selected city
+      });
+
+      historyContainer.append(button);
     });
   }
 
@@ -49,7 +96,6 @@ $(document).ready(function () {
         return response.json();
       })
       .then(function (forecastData) {
-        // localStorage.setItem("forecast-data", JSON.stringify(forecastData));
         loadMainWeather(forecastData);
         getFiveDayForecast(forecastData);
       });
@@ -69,7 +115,6 @@ $(document).ready(function () {
     iconImage1.attr("src", iconLink);
 
     $("#city-name").append(iconImage1);
-
     $("#main-temperature").text(
       "Temperature: " + mainWeather.list[0].main.temp
     );
@@ -78,34 +123,32 @@ $(document).ready(function () {
       "Humidity: " + mainWeather.list[0].main.humidity + "%"
     );
   }
+
   //::::::::::: 5-Day Forecast section :::::::::::::::
   function getFiveDayForecast(forecastData) {
-    forecastData.list.forEach((e) => {
-      // const Today = dayjs().format("YYYY-MM-DD 00:00:00");
-      const day1 = dayjs().add(1, "day").format("YYYY-MM-DD 00:00:00");
-      const day2 = dayjs().add(2, "day").format("YYYY-MM-DD 00:00:00");
-      const day3 = dayjs().add(3, "day").format("YYYY-MM-DD 00:00:00");
-      const day4 = dayjs().add(4, "day").format("YYYY-MM-DD 00:00:00");
-      const day5 = dayjs().add(5, "day").format("YYYY-MM-DD 00:00:00");
+    const dates = [
+      dayjs().add(1, "day").format("YYYY-MM-DD 12:00:00"),
+      dayjs().add(2, "day").format("YYYY-MM-DD 12:00:00"),
+      dayjs().add(3, "day").format("YYYY-MM-DD 12:00:00"),
+      dayjs().add(4, "day").format("YYYY-MM-DD 12:00:00"),
+      dayjs().add(5, "day").format("YYYY-MM-DD 12:00:00"),
+    ];
 
-      if (e.dt_txt === day1) {
-        populateForecastCard(e, ".card-title1", 1);
-      } else if (e.dt_txt === day2) {
-        populateForecastCard(e, ".card-title2", 2);
-      } else if (e.dt_txt === day3) {
-        populateForecastCard(e, ".card-title3", 3);
-      } else if (e.dt_txt === day4) {
-        populateForecastCard(e, ".card-title4", 4);
-      } else if (e.dt_txt === day5) {
-        populateForecastCard(e, ".card-title5", 5);
+    let dateIndex = 0;
+
+    for (const e of forecastData.list) {
+      if (e.dt_txt === dates[dateIndex]) {
+        populateForecastCard(e, `.card-title${dateIndex + 1}`, dateIndex + 1);
+        dateIndex++;
+        if (dateIndex === 5) {
+          break; // Stop looping once all 5 dates have been found
+        }
       }
-    });
+    }
   }
 
   function populateForecastCard(data, elementClass, num) {
     $(elementClass).text(dayjs(data.dt_txt).format("M/DD/YYYY"));
-
-    // console.log(data);
 
     const icon = data.weather[0].icon;
     const iconLink = "https://openweathermap.org/img/wn/" + icon + ".png";
