@@ -25,10 +25,6 @@ The application also stores the user's search history in local storage and allow
 - jQuery
 - OpenWeather API
 
-## Getting Started
-
-To run the application, simply open the `index.html` file in your web browser.
-
 ## Credits
 
 This application was created by [Your Name Here] for a coding bootcamp project.
