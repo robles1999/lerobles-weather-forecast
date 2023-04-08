@@ -13,6 +13,10 @@ The application takes in user input for a city name and makes an API call to ret
 
 The application also stores the user's search history in local storage and allows them to revisit previous searches by clicking on the corresponding button in the search history section.
 
+## Website
+
+[Weather Dashboard](https://robles1999.github.io/weather-forecast-module-6/)
+
 ## Technologies Used
 
 - HTML
