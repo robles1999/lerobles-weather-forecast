@@ -1,13 +1,11 @@
 "use strict";
-import WEATHER_KEY from "./env-variables.js";
 
 $(document).ready(function () {
   let count = 0;
   let localStorageData;
   loadStorageData();
   showHistory();
-  const weatherKey = WEATHER_KEY;
-  // const weatherKey = "a660a5b41f50067965e089ee5349ac0e";
+  const weatherKey = "a660a5b41f50067965e089ee5349ac0e";
 
   // :::::::::::::: Default location ::::::::::::::::
   getApiData("Orlando");
