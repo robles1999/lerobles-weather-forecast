@@ -27,4 +27,4 @@ The application also stores the user's search history in local storage and allow
 
 ## Credits
 
-This application was created by [Your Name Here] for a coding bootcamp project.
+This application was created by Luis Robles for a UCF coding Bootcamp project.
