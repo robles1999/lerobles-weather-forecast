@@ -1,9 +1,13 @@
 "use strict";
+import WEATHER_KEY from "./env-variables.js";
+
 $(document).ready(function () {
+  let count = 0;
   let localStorageData;
   loadStorageData();
   showHistory();
-  const weatherKey = "a660a5b41f50067965e089ee5349ac0e";
+  const weatherKey = WEATHER_KEY;
+  // const weatherKey = "a660a5b41f50067965e089ee5349ac0e";
 
   // :::::::::::::: Default location ::::::::::::::::
   getApiData("Orlando");
@@ -18,12 +22,7 @@ $(document).ready(function () {
     // Clear input field
     $("#city-input").val("");
 
-    // // Save searched city to local storage
-    // localStorageData.add(searchCity);
-    // localStorage.setItem("city", JSON.stringify(Array.from(localStorageData)));
-
     getApiData(searchCity);
-    // showHistory();
   });
 
   // Load previous data and store it in a set to avoid duplicate history
@@ -58,7 +57,7 @@ $(document).ready(function () {
     const forecastData =
       "https://api.openweathermap.org/data/2.5/forecast?q=" +
       city +
-      "&cnt=95&appid=" +
+      "&appid=" +
       weatherKey +
       "&units=imperial";
 
@@ -68,17 +67,24 @@ $(document).ready(function () {
       })
       .then(function (forecastData) {
         console.log(forecastData);
-
-        // Save searched city to local storage using the name of the city
-        // of the API data to display the city name with the correct font case
-        localStorageData.add(forecastData.city.name);
-        localStorage.setItem(
-          "city",
-          JSON.stringify(Array.from(localStorageData))
-        );
+        if (count > 0) {
+          // Save searched city to local storage using the name of the city
+          // of the API data to display the city name with the correct font
+          localStorageData.add(forecastData.city.name);
+          localStorage.setItem(
+            "city",
+            JSON.stringify(Array.from(localStorageData))
+          );
+        }
+        // localStorageData.add(forecastData.city.name);
+        // localStorage.setItem(
+        //   "city",
+        //   JSON.stringify(Array.from(localStorageData))
+        // );
         showHistory();
         loadMainWeather(forecastData);
         getFiveDayForecast(forecastData);
+        count = 1;
       });
   }
 
@@ -98,7 +104,7 @@ $(document).ready(function () {
 
     $("#city-name").append(iconImage1);
     $("#main-temperature").text(
-      "Temperature: " + mainWeather.list[0].main.temp
+      "Temperature: " + Math.round(mainWeather.list[0].main.temp)
     );
     $("#main-wind").text("Wind: " + mainWeather.list[0].wind.speed);
     $("#main-humidity").text(
@@ -143,7 +149,7 @@ $(document).ready(function () {
     const iconImage = $("<img>").attr("alt", data.weather.description);
     iconImage.attr("src", iconLink);
     // Create paragraph elements
-    const forecastTemp = $("<p>").text("Temp: " + data.main.temp);
+    const forecastTemp = $("<p>").text("Temp: " + Math.round(data.main.temp));
     const forecastWind = $("<p>").text("Wind: " + data.wind.speed);
     const forecastHumidity = $("<p>").text("Humidity: " + data.main.humidity);
     // Add elements to the cards
