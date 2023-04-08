@@ -23,11 +23,12 @@ $(document).ready(function () {
     getApiData(searchCity);
   });
 
-  // Load previous data and store it in a set to avoid duplicate history
+  // Load previous data and store it in a `set` to avoid duplicate history
   function loadStorageData() {
     localStorageData = new Set(JSON.parse(localStorage.getItem("city")) || []);
   }
 
+  // :::::::::::::: History ::::::::::::::::
   // Create a new button for each city in local storage and
   // add an event listener to each
   function showHistory() {
@@ -50,6 +51,7 @@ $(document).ready(function () {
     });
   }
 
+  // :::::::::::::: API call ::::::::::::::::
   function getApiData(city) {
     // API to get weather data
     const forecastData =
@@ -67,18 +69,13 @@ $(document).ready(function () {
         console.log(forecastData);
         if (count > 0) {
           // Save searched city to local storage using the name of the city
-          // of the API data to display the city name with the correct font
+          // on the API data to display the city name with the correct font case
           localStorageData.add(forecastData.city.name);
           localStorage.setItem(
             "city",
             JSON.stringify(Array.from(localStorageData))
           );
         }
-        // localStorageData.add(forecastData.city.name);
-        // localStorage.setItem(
-        //   "city",
-        //   JSON.stringify(Array.from(localStorageData))
-        // );
         showHistory();
         loadMainWeather(forecastData);
         getFiveDayForecast(forecastData);
@@ -112,6 +109,7 @@ $(document).ready(function () {
 
   //::::::::::: 5-Day Forecast section :::::::::::::::
   function getFiveDayForecast(forecastData) {
+    // Days calculated using the dayjs module
     const dates = [
       dayjs().add(1, "day").format("YYYY-MM-DD 09:00:00"),
       dayjs().add(2, "day").format("YYYY-MM-DD 09:00:00"),
