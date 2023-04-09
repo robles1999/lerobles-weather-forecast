@@ -10,3 +10,7 @@
 .top-temp-card{
   max-width: 920px;
 }
+
+button .bg-light{
+  background-color: lightslategray;
+}

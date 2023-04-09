@@ -37,7 +37,7 @@ $(document).ready(function () {
 
     localStorageData.forEach((data) => {
       const button = $("<button>")
-        .addClass("btn-history btn btn-primary mb-3")
+        .addClass("btn-history btn text-black btn-secondary font-weight-bold mb-2 mt-2")
         .text(data)
         .attr("data-city", data);
 
